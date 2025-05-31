@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tạo mã QR chúc mừng ngày 1/6 💖</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
         
@@ -594,28 +595,57 @@
             
             const celebrationURL = `${window.location.origin}${window.location.pathname}?celebration=true&data=${encodeURIComponent(JSON.stringify(celebrationData))}`;
             
+            // Clear previous QR code
             document.getElementById('qrcode').innerHTML = '';
             
-            QRCode.toCanvas(document.getElementById('qrcode'), celebrationURL, {
-                width: 220,
-                height: 220,
-                color: {
-                    dark: '#ff6b9d',
-                    light: '#ffffff'
-                },
-                margin: 2
-            }, function (error) {
-                if (error) {
-                    console.error(error);
-                    alert('❌ Có lỗi xảy ra khi tạo mã QR siêu đặc biệt! Vui lòng thử lại! ❌');
-                } else {
-                    document.getElementById('downloadBtn').style.display = 'inline-block';
-                    currentQRCode = document.querySelector('#qrcode canvas');
-                    
-                    // Create celebration effect when QR is generated
-                    createMiniFireworks();
-                }
-            });
+            try {
+                // Create QR code using QRious library
+                const canvas = document.createElement('canvas');
+                const qr = new QRious({
+                    element: canvas,
+                    value: celebrationURL,
+                    size: 220,
+                    background: '#ffffff',
+                    foreground: '#ff6b9d',
+                    level: 'M'
+                });
+                
+                // Style the canvas
+                canvas.style.borderRadius = '20px';
+                canvas.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.2), 0 0 50px rgba(255, 107, 157, 0.3)';
+                canvas.style.animation = 'qrPulse 3s ease-in-out infinite';
+                
+                document.getElementById('qrcode').appendChild(canvas);
+                document.getElementById('downloadBtn').style.display = 'inline-block';
+                currentQRCode = canvas;
+                
+                // Create celebration effect when QR is generated
+                createMiniFireworks();
+            } catch (error) {
+                console.error('QR Generation Error:', error);
+                // Fallback method using simple QR generation
+                const qrContainer = document.getElementById('qrcode');
+                qrContainer.innerHTML = `
+                    <div style="
+                        background: white; 
+                        border-radius: 20px; 
+                        padding: 20px; 
+                        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                        border: 3px solid #ff6b9d;
+                    ">
+                        <div style="font-size: 18px; color: #ff6b9d; margin-bottom: 15px;">
+                            📱 Mã QR đã được tạo!
+                        </div>
+                        <div style="font-size: 14px; color: #666; word-break: break-all; line-height: 1.4;">
+                            Link: ${celebrationURL}
+                        </div>
+                        <div style="margin-top: 15px; font-size: 12px; color: #999;">
+                            Sao chép link trên để chia sẻ
+                        </div>
+                    </div>
+                `;
+                createMiniFireworks();
+            }
         }
 
         function createMiniFireworks() {
@@ -706,3 +736,79 @@
                     confetti.className = 'confetti';
                     confetti.style.left = Math.random() * 100 + '%';
                     confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 6000);
+                }, i * 100);
+            }
+        }
+
+        function backToGenerator() {
+            document.getElementById('celebration-page').classList.remove('active');
+            document.getElementById('generator-page').style.display = 'block';
+            
+            // Clear fireworks and confetti
+            document.getElementById('fireworks').innerHTML = '';
+            const confettis = document.querySelectorAll('.confetti');
+            confettis.forEach(c => c.remove());
+        }
+
+        // Check if page loaded with celebration parameters
+        window.addEventListener('load', function() {
+            createSparkles();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('celebration') === 'true') {
+                try {
+                    const data = JSON.parse(decodeURIComponent(urlParams.get('data')));
+                    showCelebration(data.name, data.message);
+                } catch (e) {
+                    showCelebration('người yêu', 'Chúc mừng ngày Quốc tế Thiếu nhi!');
+                }
+            }
+        });
+
+        // Add floating hearts randomly
+        setInterval(() => {
+            if (Math.random() > 0.8) {
+                const heart = document.createElement('div');
+                heart.innerHTML = ['💖', '💕', '💗', '💝', '💘'][Math.floor(Math.random() * 5)];
+                heart.style.position = 'fixed';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = '100%';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.animation = 'floatUp 4s linear forwards';
+                heart.style.pointerEvents = 'none';
+                heart.style.zIndex = '5';
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 4000);
+            }
+        }, 2000);
+
+        // Add CSS for floating hearts
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatUp {
+                0% {
+                    transform: translateY(0) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
