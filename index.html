@@ -1,5 +1,4 @@
-<div class="photo-grid" id="photoGrid">
-                <!-- Pho<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -990,6 +989,35 @@
             <div class="photo-grid" id="photoGrid">
                 <!-- Photos will be displayed here -->
             </div>
+
+            <!-- Timeline View -->
+            <div class="timeline-view" id="timelineView">
+                <div class="timeline" id="timeline">
+                    <!-- Timeline items will be displayed here -->
+                </div>
+            </div>
+
+            <!-- Floating Action Button -->
+            <button class="fab" onclick="document.getElementById('fileInput').click()" title="Thêm ảnh nhanh">
+                📷
+            </button>
+        </div>
+    </div>
+
+    <!-- Slideshow Modal -->
+    <div class="slideshow-modal" id="slideshowModal">
+        <div class="slideshow-container">
+            <img class="slideshow-image" id="slideshowImage" src="" alt="">
+            <button class="slideshow-nav prev" onclick="previousSlide()">‹</button>
+            <button class="slideshow-nav next" onclick="nextSlide()">›</button>
+            <div class="slideshow-info" id="slideshowInfo">
+                <div>1 / 1</div>
+                <div>Tên ảnh</div>
+            </div>
+            <div class="slideshow-controls">
+                <button class="slideshow-btn" onclick="toggleAutoplay()" id="autoplayBtn">▶️ Tự động</button>
+                <button class="slideshow-btn" onclick="closeSlideshow()">✖️ Đóng</button>
+            </div>
         </div>
     </div>
 
@@ -1009,6 +1037,9 @@
         let photos = [];
         let photoIdCounter = 1;
         let currentPasscode = "";
+        let currentSlideIndex = 0;
+        let slideshowInterval = null;
+        let isAutoplay = false;
 
         // Add digit to passcode
         function addDigit(digit) {
